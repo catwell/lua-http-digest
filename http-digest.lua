@@ -40,6 +40,20 @@ local _request = function(t)
   end
   url.user,url.password,url.authority,url.userinfo = nil,nil,nil,nil
   t.url = s_url.build(url)
+  local ghost_source
+  if t.source then
+    local ghost_chunks = {}
+    local ghost_capture = function(x)
+      if x then ghost_chunks[#ghost_chunks+1] = x end
+      return x
+    end
+    local ghost_i = 0
+    ghost_source = function()
+      ghost_i = ghost_i+1
+      return ghost_chunks[ghost_i]
+    end
+    t.source = ltn12.source.chain(t.source,ghost_capture)
+  end
   local b,c,h = s_http.request(t)
   if (c == 401) and h["www-authenticate"] then
     local ht = parse_header(h["www-authenticate"])
@@ -74,6 +88,7 @@ local _request = function(t)
       response = response,
       opaque = ht.opaque,
     }
+    if t.source then t.source = ghost_source end
     b,c,h = s_http.request(t)
     return b,c,h
   else return b,c,h end
