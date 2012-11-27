@@ -12,8 +12,8 @@ Only supports auth/MD5, no reuse of client nonce, pull requests welcome.
 - luasocket
 - md5
 
-Tests require cwtest, a JSON parser and the availability
-of [httpbin.org](http://httpbin.org).
+Tests require [cwtest](https://github.com/catwell/cwtest), a JSON parser
+and the availability of [httpbin.org](http://httpbin.org).
 
 ## Usage
 
