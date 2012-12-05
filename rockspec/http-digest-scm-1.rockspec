@@ -29,4 +29,5 @@ build = {
          ["http-digest"] = "http-digest.lua",
       },
    },
+   copy_directories = {},
 }
