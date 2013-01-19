@@ -31,4 +31,4 @@ See the tests for more.
 
 ## Copyright
 
-Copyright (c) 2012 Moodstocks SAS
+Copyright (c) 2012-2013 Moodstocks SAS
