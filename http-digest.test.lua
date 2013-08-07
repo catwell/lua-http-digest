@@ -1,6 +1,11 @@
+local function prequire(...)
+  local ok, mod = pcall(require, ...)
+  return ok and mod, ok and (...) or mod
+end
+
 local cwtest = require "cwtest"
 local ltn12 = require "ltn12"
-local J = (require "json").decode
+local J = assert((prequire "json") or (prequire "cjson")).decode
 local H = (require "http-digest").request
 
 local T = cwtest.new()
