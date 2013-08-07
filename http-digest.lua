@@ -52,8 +52,12 @@ end
 
 local make_digest_header = function(t)
   local s = {}
-  for k,v in pairs(t) do
-    s[#s+1] = k .. '="' .. v .. '"'
+  for k,v in ipairs(t) do
+    k,v = v[1],v[2]
+    if v then
+      if k == 'nc' then s[#s+1] = k .. '=' .. v .. ''
+      else s[#s+1] = k .. '="' .. v .. '"' end
+    end
   end
   return "Digest " .. table.concat(s,', ')
 end
@@ -112,16 +116,16 @@ local _request = function(t)
     )
     t.headers = t.headers or {}
     t.headers.authorization = make_digest_header{
-      username = user,
-      realm = ht.realm,
-      uri = uri,
-      nonce = ht.nonce,
-      nc = nc,
-      cnonce = cnonce,
-      algorithm = ht.algorithm or 'MD5',
-      qop = "auth",
-      response = response,
-      opaque = ht.opaque,
+      { "username"  , user                  },
+      { "realm"     , ht.realm              },
+      { "nonce"     , ht.nonce              },
+      { "uri"       , uri                   },
+      { "cnonce"    , cnonce                },
+      { "nc"        , nc                    },
+      { "qop"       , "auth"                },
+      { "algorithm" , ht.algorithm or 'MD5' },
+      { "response"  , response              },
+      { "opaque"    , ht.opaque             },
     }
     if t.source then t.source = ghost_source end
     b,c,h = s_http.request(t)
