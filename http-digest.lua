@@ -22,7 +22,7 @@ do -- select MD5 library
 
 end
 
-assert(md5sum,"can not find suported md5 module")
+assert(md5sum,"cannot find supported md5 module")
 
 local s_http = require "socket.http"
 local s_url = require "socket.url"
