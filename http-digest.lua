@@ -1,42 +1,35 @@
-local function prequire(...)
-  local ok, mod = pcall(require, ...)
-  return ok and mod, ok and (...) or mod
-end
+local md5sum = nil
 
-local DIGEST = {}
+do -- select MD5 library
 
-local crypto = prequire "crypto"
-if crypto then
-  local digest = crypto.evp and crypto.evp.digest or crypto.digest
-  if digest then 
-    DIGEST.md5 = function (str) return digest("md5", str) end
-  end
-end
-
-if not DIGEST.md5 and prequire "digest" and md5 then
-  local md5 = md5
-  DIGEST.md5 = function (str) return md5.digest(str) end
-end
-
-if not DIGEST.md5 then
-  local md5 = prequire "md5"
-  if md5 then 
-    if md5.digest then
-      DIGEST.md5 = function(str) return md5.digest(str)       end
-    elseif md5.sumhexa then
-      DIGEST.md5 = function(str) return md5.sumhexa(str)      end
+  local ok,mod = pcall(require,"crypto")
+  if ok then
+    local digest = (mod.evp or mod).digest
+    if digest then
+      md5sum = function(str) return digest("md5",str) end
     end
   end
+
+  if not md5sum then
+    ok,mod = pcall(require,"md5")
+    if ok then md5sum = md5.sumhexa or md5.digest end
+  end
+
+  if not md5sum then
+    ok,mod = pcall(require,"digest") -- last because using globals
+    if ok and md5 then md5sum = md5.digest end
+  end
+
 end
 
-assert(DIGEST.md5, 'can not find suported md5 module')
+assert(md5sum,"can not find suported md5 module")
 
 local s_http = require "socket.http"
 local s_url = require "socket.url"
 local ltn12 = require "ltn12"
 
-local hash = function(_hash, ...)
-  return _hash(table.concat({...},":"))
+local hash = function(...)
+  return md5sum(table.concat({...},":"))
 end
 
 local parse_header = function(h)
@@ -51,11 +44,13 @@ end
 
 local make_digest_header = function(t)
   local s = {}
-  for k,v in ipairs(t) do
-    k,v = v[1],v[2]
-    if v then
-      if k == 'nc' then s[#s+1] = k .. '=' .. v .. ''
-      else s[#s+1] = k .. '="' .. v .. '"' end
+  local x
+  for i=1,#t do
+    x = t[i]
+    if x.unquote then
+      s[i] =  x[1] .. '=' .. x[2]
+    else
+      s[i] = x[1] .. '="' .. x[2] .. '"'
     end
   end
   return "Digest " .. table.concat(s,', ')
@@ -97,34 +92,32 @@ local _request = function(t)
     if ht.qop ~= "auth" then
       error(string.format("unsupported qop (%s)",tostring(ht.qop)))
     end
-    local algo = ht.algorithm and ht.algorithm:lower() or 'md5'
-    algo = DIGEST[algo]
-    if not algo then
+    if ht.algorithm and (ht.algorithm:lower() ~= "md5") then
       error(string.format("unsupported algo (%s)",tostring(ht.algorithm)))
     end
     local nc,cnonce = "00000001",string.format("%08x",os.time())
     local uri = s_url.build{path = url.path,query = url.query}
     local method = t.method or "GET"
-    local response = hash(algo,
-      hash(algo,user,ht.realm,password),
+    local response = hash(
+      hash(user,ht.realm,password),
       ht.nonce,
       nc,
       cnonce,
       "auth",
-      hash(algo,method,uri)
+      hash(method,uri)
     )
     t.headers = t.headers or {}
     t.headers.authorization = make_digest_header{
-      { "username"  , user                  },
-      { "realm"     , ht.realm              },
-      { "nonce"     , ht.nonce              },
-      { "uri"       , uri                   },
-      { "cnonce"    , cnonce                },
-      { "nc"        , nc                    },
-      { "qop"       , "auth"                },
-      { "algorithm" , ht.algorithm or 'MD5' },
-      { "response"  , response              },
-      { "opaque"    , ht.opaque             },
+      {"username", user},
+      {"realm", ht.realm},
+      {"nonce", ht.nonce},
+      {"uri", uri},
+      {"cnonce", cnonce},
+      {"nc", nc, unquote=true},
+      {"qop", "auth"},
+      {"algorithm", "MD5"},
+      {"response", response},
+      {"opaque", ht.opaque},
     }
     if t.source then t.source = ghost_source end
     b,c,h = s_http.request(t)

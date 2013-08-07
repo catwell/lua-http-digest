@@ -1,12 +1,14 @@
-local function prequire(...)
-  local ok, mod = pcall(require, ...)
-  return ok and mod, ok and (...) or mod
-end
-
 local cwtest = require "cwtest"
 local ltn12 = require "ltn12"
-local J = assert((prequire "json") or (prequire "cjson")).decode
 local H = (require "http-digest").request
+
+local J = nil
+do -- Find a JSON parser
+  local ok,json = pcall(require,"cjson")
+  if not ok then ok,json = pcall(require,"json") end
+  J = json.decode
+  assert(ok and J,"no JSON parser found :(")
+end
 
 local T = cwtest.new()
 
