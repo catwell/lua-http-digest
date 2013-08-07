@@ -34,7 +34,6 @@ assert(DIGEST.md5, 'can not find suported md5 module')
 local s_http = require "socket.http"
 local s_url = require "socket.url"
 local ltn12 = require "ltn12"
-local md5 = require "md5"
 
 local hash = function(_hash, ...)
   return _hash(table.concat({...},":"))
