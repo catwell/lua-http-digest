@@ -1,8 +1,9 @@
 package = "http-digest"
-version = "scm-1"
+version = "1.1-1"
 
 source = {
    url = "git://github.com/catwell/lua-http-digest.git",
+   branch = "v1.1",
 }
 
 description = {
