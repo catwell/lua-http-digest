@@ -24,7 +24,7 @@ generic interface are supported. Here is an example with the simple interface:
 ```lua
 local http_digest = require "http-digest"
 local url = "http://user:passwd@httpbin.org/digest-auth/auth/user/passwd"
-local b,c,h = http_digest.request(url)
+local b, c, h = http_digest.request(url)
 ```
 
 See the tests for more.
@@ -32,3 +32,4 @@ See the tests for more.
 ## Copyright
 
 Copyright (c) 2012-2013 Moodstocks SAS
+Copyright (c) 2014 Pierre Chapuis

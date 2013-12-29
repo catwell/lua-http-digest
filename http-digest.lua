@@ -2,41 +2,41 @@ local md5sum = nil
 
 do -- select MD5 library
 
-  local ok,mod = pcall(require,"crypto")
+  local ok, mod = pcall(require, "crypto")
   if ok then
     local digest = (mod.evp or mod).digest
     if digest then
-      md5sum = function(str) return digest("md5",str) end
+      md5sum = function(str) return digest("md5", str) end
     end
   end
 
   if not md5sum then
-    ok,mod = pcall(require,"md5")
+    ok, mod = pcall(require, "md5")
     if ok then md5sum = md5.sumhexa or md5.digest end
   end
 
   if not md5sum then
-    ok,mod = pcall(require,"digest") -- last because using globals
+    ok, mod = pcall(require, "digest") -- last because using globals
     if ok and md5 then md5sum = md5.digest end
   end
 
 end
 
-assert(md5sum,"cannot find supported md5 module")
+assert(md5sum, "cannot find supported md5 module")
 
 local s_http = require "socket.http"
 local s_url = require "socket.url"
 local ltn12 = require "ltn12"
 
 local hash = function(...)
-  return md5sum(table.concat({...},":"))
+  return md5sum(table.concat({...}, ":"))
 end
 
 local parse_header = function(h)
   local r = {}
   for k,v in (h .. ','):gmatch("(%w+)=(.-),") do
-    if v:sub(1,1) == '"' then -- strip quotes
-      r[k:lower()] = v:sub(2,-2)
+    if v:sub(1, 1) == '"' then -- strip quotes
+      r[k:lower()] = v:sub(2, -2)
     else r[k:lower()] = v end
   end
   return r
@@ -53,7 +53,7 @@ local make_digest_header = function(t)
       s[i] = x[1] .. '="' .. x[2] .. '"'
     end
   end
-  return "Digest " .. table.concat(s,', ')
+  return "Digest " .. table.concat(s, ', ')
 end
 
 local hcopy = function(t)
@@ -65,11 +65,11 @@ end
 local _request = function(t)
   if not t.url then error("missing URL") end
   local url = s_url.parse(t.url)
-  local user,password = url.user,url.password
+  local user, password = url.user, url.password
   if not (user and password) then
     error("missing credentials in URL")
   end
-  url.user,url.password,url.authority,url.userinfo = nil,nil,nil,nil
+  url.user, url.password, url.authority, url.userinfo = nil, nil, nil, nil
   t.url = s_url.build(url)
   local ghost_source
   if t.source then
@@ -83,28 +83,28 @@ local _request = function(t)
       ghost_i = ghost_i+1
       return ghost_chunks[ghost_i]
     end
-    t.source = ltn12.source.chain(t.source,ghost_capture)
+    t.source = ltn12.source.chain(t.source, ghost_capture)
   end
-  local b,c,h = s_http.request(t)
+  local b, c, h = s_http.request(t)
   if (c == 401) and h["www-authenticate"] then
     local ht = parse_header(h["www-authenticate"])
     assert(ht.realm and ht.nonce and ht.opaque)
     if ht.qop ~= "auth" then
-      error(string.format("unsupported qop (%s)",tostring(ht.qop)))
+      error(string.format("unsupported qop (%s)", tostring(ht.qop)))
     end
     if ht.algorithm and (ht.algorithm:lower() ~= "md5") then
-      error(string.format("unsupported algo (%s)",tostring(ht.algorithm)))
+      error(string.format("unsupported algo (%s)", tostring(ht.algorithm)))
     end
-    local nc,cnonce = "00000001",string.format("%08x",os.time())
-    local uri = s_url.build{path = url.path,query = url.query}
+    local nc, cnonce = "00000001", string.format("%08x", os.time())
+    local uri = s_url.build{path = url.path, query = url.query}
     local method = t.method or "GET"
     local response = hash(
-      hash(user,ht.realm,password),
+      hash(user, ht.realm, password),
       ht.nonce,
       nc,
       cnonce,
       "auth",
-      hash(method,uri)
+      hash(method, uri)
     )
     t.headers = t.headers or {}
     t.headers.authorization = make_digest_header{
@@ -120,9 +120,9 @@ local _request = function(t)
       {"opaque", ht.opaque},
     }
     if t.source then t.source = ghost_source end
-    b,c,h = s_http.request(t)
-    return b,c,h
-  else return b,c,h end
+    b, c, h = s_http.request(t)
+    return b, c, h
+  else return b, c, h end
 end
 
 local request = function(x)
@@ -131,9 +131,9 @@ local request = function(x)
     return _request(hcopy(x))
   elseif _t == "string" then
     local r = {}
-    local _,c,h = _request{url = x,sink = ltn12.sink.table(r)}
-    return table.concat(r),c,h
-  else error(string.format("unexpected type %s",_t)) end
+    local _, c, h = _request{url = x, sink = ltn12.sink.table(r)}
+    return table.concat(r), c, h
+  else error(string.format("unexpected type %s", _t)) end
 end
 
 return {
