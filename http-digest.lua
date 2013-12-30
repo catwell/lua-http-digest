@@ -119,6 +119,13 @@ local _request = function(t)
       {"response", response},
       {"opaque", ht.opaque},
     }
+    if not t.headers.cookie and h["set-cookie"] then
+      -- not really correct but enough for httpbin
+      local cookie = (h["set-cookie"] .. ";"):match("(.-=.-)[;,]")
+      if cookie then
+        t.headers.cookie = "$Version: 0; " .. cookie .. ";"
+      end
+    end
     if t.source then t.source = ghost_source end
     b, c, h = s_http.request(t)
     return b, c, h
