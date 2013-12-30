@@ -90,10 +90,10 @@ local _request = function(t)
     local ht = parse_header(h["www-authenticate"])
     assert(ht.realm and ht.nonce and ht.opaque)
     if ht.qop ~= "auth" then
-      error(string.format("unsupported qop (%s)", tostring(ht.qop)))
+      return nil, string.format("unsupported qop (%s)", tostring(ht.qop))
     end
     if ht.algorithm and (ht.algorithm:lower() ~= "md5") then
-      error(string.format("unsupported algo (%s)", tostring(ht.algorithm)))
+      return nil, string.format("unsupported algo (%s)", tostring(ht.algorithm))
     end
     local nc, cnonce = "00000001", string.format("%08x", os.time())
     local uri = s_url.build{path = url.path, query = url.query}
