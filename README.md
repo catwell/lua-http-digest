@@ -31,5 +31,5 @@ See the tests for more.
 
 ## Copyright
 
-Copyright (c) 2012-2013 Moodstocks SAS
-Copyright (c) 2014 Pierre Chapuis
+- Copyright (c) 2012-2013 Moodstocks SAS
+- Copyright (c) 2014 Pierre Chapuis
