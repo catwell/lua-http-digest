@@ -12,7 +12,10 @@ do -- select MD5 library
 
   if not md5sum then
     ok, mod = pcall(require, "md5")
-    if ok then md5sum = md5.sumhexa or md5.digest end
+    if ok then
+      local md5 = mod or md5
+      md5sum = md5.sumhexa or md5.digest
+    end
   end
 
   if not md5sum then
