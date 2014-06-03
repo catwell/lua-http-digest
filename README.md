@@ -29,6 +29,15 @@ local b, c, h = http_digest.request(url)
 
 See the tests for more.
 
+## Note
+
+If you get this error when running the tests, update LuaSocket:
+
+    variable 'PROXY' is not declared
+
+You may need to use the SCM version to run them.
+This only impacts the tests, the code itself works with older versions as well.
+
 ## Copyright
 
 - Copyright (c) 2012-2013 Moodstocks SAS
