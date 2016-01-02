@@ -2,7 +2,7 @@ local cwtest = require "cwtest"
 local ltn12 = require "ltn12"
 local H = (require "http-digest").request
 
-local J = nil
+local J
 do -- Find a JSON parser
   local ok, json = pcall(require, "cjson")
   if not ok then ok, json = pcall(require, "json") end

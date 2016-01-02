@@ -19,7 +19,7 @@ do -- select MD5 library
   end
 
   if not md5sum then
-    ok, mod = pcall(require, "digest") -- last because using globals
+    ok = pcall(require, "digest") -- last because using globals
     if ok and md5 then md5sum = md5.digest end
   end
 

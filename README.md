@@ -41,4 +41,4 @@ This only impacts the tests, the code itself works with older versions as well.
 ## Copyright
 
 - Copyright (c) 2012-2013 Moodstocks SAS
-- Copyright (c) 2014 Pierre Chapuis
+- Copyright (c) 2014-2016 Pierre Chapuis
