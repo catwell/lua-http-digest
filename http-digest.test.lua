@@ -4,10 +4,10 @@ local H = (require "http-digest").request
 
 local J
 do -- Find a JSON parser
-  local ok, json = pcall(require, "cjson")
-  if not ok then ok, json = pcall(require, "json") end
-  J = json.decode
-  assert(ok and J, "no JSON parser found :(")
+    local ok, json = pcall(require, "cjson")
+    if not ok then ok, json = pcall(require, "json") end
+    J = json.decode
+    assert(ok and J, "no JSON parser found :(")
 end
 
 local T = cwtest.new()
@@ -31,8 +31,8 @@ T:eq( c, 401 )
 
 b = {}
 _, c, h = H{
-  url = url,
-  sink = ltn12.sink.table(b),
+    url = url,
+    sink = ltn12.sink.table(b),
 }
 T:eq( c, 200 )
 b = table.concat(b)
@@ -45,10 +45,10 @@ T:eq( c, 401 )
 
 b = {}
 _, c, h = H{
-  url = url,
-  sink = ltn12.sink.table(b),
-  source = ltn12.source.string("test"),
-  headers = {["content-length"] = 4}, -- 0 would work too
+    url = url,
+    sink = ltn12.sink.table(b),
+    source = ltn12.source.string("test"),
+    headers = {["content-length"] = 4}, -- 0 would work too
 }
 T:eq( c, 200 )
 b = table.concat(b)
