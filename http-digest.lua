@@ -1,4 +1,4 @@
-local md5sum = nil
+local md5sum, md5_library
 
 do -- select MD5 library
 
@@ -7,20 +7,23 @@ do -- select MD5 library
         local digest = (mod.evp or mod).digest
         if digest then
             md5sum = function(str) return digest("md5", str) end
+            md5_library = "crypto"
         end
     end
 
     if not md5sum then
         ok, mod = pcall(require, "md5")
         if ok then
-            local md5 = (type(mod) == "table") and mod or md5
+            local md5 = (type(mod) == "table") and mod or _G.md5
             md5sum = md5.sumhexa or md5.digest
+            if md5sum then md5_library = "md5" end
         end
     end
 
     if not md5sum then
         ok = pcall(require, "digest") -- last because using globals
-        if ok and md5 then md5sum = md5.digest end
+        if ok and _G.md5 then md5sum = _G.md5.digest end
+        if md5sum then md5_library = "digest" end
     end
 
 end
@@ -147,5 +150,6 @@ local request = function(x)
 end
 
 return {
+    md5_library = md5_library,
     request = request,
 }
