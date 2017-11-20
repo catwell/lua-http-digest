@@ -94,7 +94,7 @@ local _request = function(t)
     local b, c, h = s_http.request(t)
     if (c == 401) and h["www-authenticate"] then
         local ht = parse_header(h["www-authenticate"])
-        assert(ht.realm and ht.nonce and ht.opaque)
+        assert(ht.realm and ht.nonce)
         if ht.qop ~= "auth" then
             return nil, string.format("unsupported qop (%s)", tostring(ht.qop))
         end
@@ -113,7 +113,7 @@ local _request = function(t)
             hash(method, uri)
         )
         t.headers = t.headers or {}
-        t.headers.authorization = make_digest_header{
+        local auth_header = {
             {"username", user},
             {"realm", ht.realm},
             {"nonce", ht.nonce},
@@ -123,8 +123,11 @@ local _request = function(t)
             {"qop", "auth"},
             {"algorithm", "MD5"},
             {"response", response},
-            {"opaque", ht.opaque},
         }
+        if ht.opaque then
+            table.insert(auth_header, {"opaque", ht.opaque})
+        end
+        t.headers.authorization = make_digest_header(auth_header)
         if not t.headers.cookie and h["set-cookie"] then
             -- not really correct but enough for httpbin
             local cookie = (h["set-cookie"] .. ";"):match("(.-=.-)[;,]")
