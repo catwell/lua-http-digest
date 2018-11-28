@@ -35,10 +35,12 @@ If you get this error when running the tests, update LuaSocket:
 
     variable 'PROXY' is not declared
 
-You may need to use the SCM version to run them.
+You may need to use the SCM version to run them (see
+[this issue](https://github.com/diegonehab/luasocket/issues/110)).
+
 This only impacts the tests, the code itself works with older versions as well.
 
 ## Copyright
 
 - Copyright (c) 2012-2013 Moodstocks SAS
-- Copyright (c) 2014-2017 Pierre Chapuis
+- Copyright (c) 2014-2018 Pierre Chapuis
