@@ -29,6 +29,14 @@ local b, c, h = http_digest.request(url)
 
 See the tests for more.
 
+Other compatible http clients (like Copas or LuaSec) can be used as well. To use
+another http client replace the default one:
+
+```lua
+local http_digest = require "http-digest"
+http_digest.http = require "copas.http"
+```
+
 ## Note
 
 If you get this error when running the tests, update LuaSocket:
@@ -50,3 +58,4 @@ This only impacts the tests, the code itself works with older versions as well.
 ### x.x unreleased
 
 - fix: drop initial 401 response body instead of concatenating both responses
+- feat: made the http client configurable to be able to use Copas or LuaSec clients
