@@ -44,3 +44,9 @@ This only impacts the tests, the code itself works with older versions as well.
 
 - Copyright (c) 2012-2013 Moodstocks SAS
 - Copyright (c) 2014-2018 Pierre Chapuis
+
+## Changelog
+
+### x.x unreleased
+
+- fix: drop first responses body, instead of concatenating both responses
