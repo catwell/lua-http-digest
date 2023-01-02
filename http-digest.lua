@@ -86,11 +86,10 @@ end
 --- Main logic. `params` is always a table and can be modified.
 local _request = function(params)
     if not params.url then error("missing URL") end
+
+    -- parse url to collect and remove user/pwd
     local url = s_url.parse(params.url)
     local user, password = url.user, url.password
-    if not (user and password) then
-        error("missing credentials in URL")
-    end
     url.user, url.password, url.authority, url.userinfo = nil, nil, nil, nil
     params.url = s_url.build(url)
 
@@ -116,7 +115,7 @@ local _request = function(params)
     params.sink = ltn12.sink.table(responsebody)
 
     local b, c, h = s_http.request(params)
-    if (c == 401) and h["www-authenticate"] then
+    if (c == 401) and h["www-authenticate"] and (user and password) then
         local ht = parse_header(h["www-authenticate"])
         assert(ht.realm and ht.nonce)
         if ht.qop ~= "auth" then

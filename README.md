@@ -50,3 +50,5 @@ This only impacts the tests, the code itself works with older versions as well.
 ### x.x unreleased
 
 - fix: drop initial 401 response body instead of concatenating both responses
+- feat: also allow unauthenticated requests. Only check for creds if they are
+  needed. If not provided return the original 401 response.
