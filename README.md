@@ -50,3 +50,4 @@ This only impacts the tests, the code itself works with older versions as well.
 ### x.x unreleased
 
 - fix: drop initial 401 response body instead of concatenating both responses
+- Chore: added CI to repository setup, for test and lint steps.

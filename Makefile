@@ -14,6 +14,9 @@ all:
 test:
 	@$(LUA) $(LMODNAME).test.lua
 
+lint:
+	@luacheck .
+
 install:
 	install -m0644 $(LMODFILE) $(INSTALL_LMOD)/$(LMODFILE)
 
