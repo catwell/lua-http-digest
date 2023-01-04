@@ -15,9 +15,11 @@ local T = cwtest.new()
 local b, c, _
 
 
--- For httpbin-go, use `localhost:8080` and `authorized`.
-local httpbin_domain = "httpbin.org" -- "httpbin.org"
-local httpbin_authenticated = "authenticated"
+-- To use a local httpbin-go build, use `localhost:8080`.
+local httpbin_domain = "httpbingo.org"
+
+-- `httpbin.org` returns {authenticated = true, user = "user"} instead.
+local httpbin_authenticated = {authorized = true, user = "user"}
 
 local httpbin_route = httpbin_domain .. "/digest-auth/auth/user/passwd"
 local url = "http://user:passwd@" .. httpbin_route
@@ -29,7 +31,7 @@ T:start("basics")
 
 b, c = http_digest.request(url)
 T:eq( c, 200 )
-T:eq( json_decode(b), {[httpbin_authenticated] = true, user = "user"} )
+T:eq( json_decode(b), httpbin_authenticated )
 
 _, c = http_digest.request(badurl)
 T:eq( c, 401 )
@@ -43,7 +45,7 @@ _, c = http_digest.request {
 }
 T:eq( c, 200 )
 b = table.concat(b)
-T:eq( json_decode(b), {[httpbin_authenticated] = true, user = "user"} )
+T:eq( json_decode(b), httpbin_authenticated )
 
 _, c = http_digest.request({url = badurl})
 T:eq( c, 401 )
@@ -60,6 +62,6 @@ _, c = http_digest.request {
 T:eq( c, 200 )
 b = table.concat(b)
 T:eq( select(2, b:gsub("{","")), 1 ) -- no duplicate JSON body
-T:eq( json_decode(b), {[httpbin_authenticated] = true, user = "user"} )
+T:eq( json_decode(b), httpbin_authenticated )
 
 T:done()
