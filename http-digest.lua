@@ -35,6 +35,18 @@ local s_http = require "socket.http"
 local s_url = require "socket.url"
 local ltn12 = require "ltn12"
 
+if not ltn12.source.table then
+    -- creates table source, older ltn12 versions don't have this
+    function ltn12.source.table(t)
+        assert('table' == type(t))
+        local i = 0
+        return function()
+            i = i + 1
+            return t[i]
+        end
+    end
+end
+
 local hash = function(...)
     return md5sum(table.concat({...}, ":"))
 end
@@ -81,6 +93,8 @@ local _request = function(params)
     end
     url.user, url.password, url.authority, url.userinfo = nil, nil, nil, nil
     params.url = s_url.build(url)
+
+    -- set up another source to capture request body for the second request
     local ghost_source
     if params.source then
         local ghost_chunks = {}
@@ -95,6 +109,12 @@ local _request = function(params)
         end
         params.source = ltn12.source.chain(params.source, ghost_capture)
     end
+
+    -- set up temporary sink for first request
+    local responsebody = {}
+    local client_sink = params.sink
+    params.sink = ltn12.sink.table(responsebody)
+
     local b, c, h = s_http.request(params)
     if (c == 401) and h["www-authenticate"] then
         local ht = parse_header(h["www-authenticate"])
@@ -140,9 +160,14 @@ local _request = function(params)
             end
         end
         if params.source then params.source = ghost_source end
+        params.sink = client_sink
         b, c, h = s_http.request(params)
         return b, c, h
-    else return b, c, h end
+    else
+        -- only 1 request, copy contents of temporary sink to the client provided sink
+        ltn12.pump.all(ltn12.source.table(responsebody), client_sink)
+        return b, c, h
+    end
 end
 
 local request = function(params)
