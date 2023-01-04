@@ -43,10 +43,10 @@ This only impacts the tests, the code itself works with older versions as well.
 ## Copyright
 
 - Copyright (c) 2012-2013 Moodstocks SAS
-- Copyright (c) 2014-2018 Pierre Chapuis
+- Copyright (c) 2014-2022 Pierre Chapuis
 
 ## Changelog
 
 ### x.x unreleased
 
-- fix: drop first responses body, instead of concatenating both responses
+- fix: drop initial 401 response body instead of concatenating both responses
