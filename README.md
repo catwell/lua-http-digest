@@ -31,6 +31,14 @@ local b, c, h = http_digest.request(url)
 
 See the tests for more.
 
+Other compatible http clients (like Copas or LuaSec) can be used as well. To use
+another http client replace the default one:
+
+```lua
+local http_digest = require "http-digest"
+http_digest.http = require "copas.http"
+```
+
 ## Copyright
 
 - Copyright (c) 2012-2013 Moodstocks SAS
@@ -43,3 +51,4 @@ See the tests for more.
 - fix: drop initial 401 response body instead of concatenating both responses
 - feat: also allow unauthenticated requests. Only check for creds if they are
   needed. If not provided return the original 401 response.
+- feat: made the http client configurable to be able to use Copas or LuaSec clients
