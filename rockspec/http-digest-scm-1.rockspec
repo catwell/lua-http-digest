@@ -1,3 +1,5 @@
+rockspec_format = "3.0"
+
 package = "http-digest"
 version = "scm-1"
 
@@ -26,4 +28,14 @@ build = {
     type = "none",
     install = { lua = { ["http-digest"] = "http-digest.lua" } },
     copy_directories = {},
+}
+
+test_dependencies = {
+    "cwtest",
+    "luajson",
+}
+
+test = {
+   type = "command",
+   script = "http-digest.test.lua",
 }

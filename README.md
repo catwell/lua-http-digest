@@ -1,5 +1,7 @@
 # http-digest
 
+![CI Status](https://github.com/catwell/lua-http-digest/actions/workflows/ci.yml/badge.svg?branch=master)
+
 ## Presentation
 
 Small implementation of HTTP Digest Authentication (client-side) in Lua
@@ -13,7 +15,7 @@ Only supports auth/MD5, no reuse of client nonce, pull requests welcome.
 - md5
 
 Tests require [cwtest](https://github.com/catwell/cwtest), a JSON parser
-and the availability of [httpbin.org](http://httpbin.org).
+and the availability of [httpbingo.org](http://httpbingo.org).
 
 ## Usage
 
@@ -23,22 +25,11 @@ generic interface are supported. Here is an example with the simple interface:
 
 ```lua
 local http_digest = require "http-digest"
-local url = "http://user:passwd@httpbin.org/digest-auth/auth/user/passwd"
+local url = "http://user:passwd@httpbingo.org/digest-auth/auth/user/passwd"
 local b, c, h = http_digest.request(url)
 ```
 
 See the tests for more.
-
-## Note
-
-If you get this error when running the tests, update LuaSocket:
-
-    variable 'PROXY' is not declared
-
-You may need to use the SCM version to run them (see
-[this issue](https://github.com/diegonehab/luasocket/issues/110)).
-
-This only impacts the tests, the code itself works with older versions as well.
 
 ## Copyright
 
