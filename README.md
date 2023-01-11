@@ -44,11 +44,3 @@ http_digest.http = require "copas.http"
 
 - Copyright (c) 2012-2013 Moodstocks SAS
 - Copyright (c) 2014-2022 Pierre Chapuis
-
-## Changelog
-
-### 1.3
-
-- fix: Drop initial 401 response body instead of concatenating both responses.
-- feat: Also allow unauthenticated requests. Only check for creds if they are needed. If not provided, return the original 401 response.
-- feat: Made the HTTP client configurable to be able to use Copas or LuaSec clients.
