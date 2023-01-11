@@ -4,8 +4,7 @@
 
 ## Presentation
 
-Small implementation of HTTP Digest Authentication (client-side) in Lua
-that mimics the API of LuaSocket.
+Small implementation of HTTP Digest Authentication (client-side) in Lua that mimics the API of LuaSocket.
 
 Only supports auth/MD5, no reuse of client nonce, pull requests welcome.
 
@@ -14,14 +13,11 @@ Only supports auth/MD5, no reuse of client nonce, pull requests welcome.
 - luasocket
 - md5
 
-Tests require [cwtest](https://github.com/catwell/cwtest), a JSON parser
-and the availability of [httpbingo.org](http://httpbingo.org).
+Tests require [cwtest](https://github.com/catwell/cwtest), a JSON parser and the availability of [httpbingo.org](http://httpbingo.org).
 
 ## Usage
 
-See [LuaSocket](http://w3.impa.br/~diego/software/luasocket/http.html)'s
-`http.request`. Credentials must be contained in the URL. Both the simple and
-generic interface are supported. Here is an example with the simple interface:
+See [LuaSocket](http://w3.impa.br/~diego/software/luasocket/http.html)'s `http.request`. Credentials must be contained in the URL. Both the simple and generic interface are supported. Here is an example with the simple interface:
 
 ```lua
 local http_digest = require "http-digest"
@@ -31,13 +27,18 @@ local b, c, h = http_digest.request(url)
 
 See the tests for more.
 
-Other compatible http clients (like Copas or LuaSec) can be used as well. To use
-another http client replace the default one:
+Other compatible http clients (like Copas or LuaSec) can be used as well. To use another http client replace the default one:
 
 ```lua
 local http_digest = require "http-digest"
 http_digest.http = require "copas.http"
 ```
+
+## Contributors
+
+- Pierre Chapuis ([@catwell](https://github.com/catwell))
+- Alexey Melnichuk ([@moteus](https://github.com/moteus))
+- Thijs Schreijer ([@Tieske](https://github.com/Tieske))
 
 ## Copyright
 
@@ -46,9 +47,8 @@ http_digest.http = require "copas.http"
 
 ## Changelog
 
-### x.x unreleased
+### 1.3
 
-- fix: drop initial 401 response body instead of concatenating both responses
-- feat: also allow unauthenticated requests. Only check for creds if they are
-  needed. If not provided return the original 401 response.
-- feat: made the http client configurable to be able to use Copas or LuaSec clients
+- fix: Drop initial 401 response body instead of concatenating both responses.
+- feat: Also allow unauthenticated requests. Only check for creds if they are needed. If not provided, return the original 401 response.
+- feat: Made the HTTP client configurable to be able to use Copas or LuaSec clients.
