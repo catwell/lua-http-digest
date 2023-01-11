@@ -81,3 +81,22 @@ T:eq( select(2, b:gsub("{","")), 1 ) -- no duplicate JSON body
 T:eq( json_decode(b), httpbin_authenticated )
 
 T:done()
+
+-- Copas HTTP client
+
+local copas = require "copas"
+local default_http = http_digest.http
+http_digest.http = require "copas.http"
+T:start("copas")
+
+b, c = nil, nil
+copas.addthread(function()
+    b, c = http_digest.request(url.good_creds)
+end)
+copas()
+
+T:eq( c, 200 )
+T:eq( json_decode(b), httpbin_authenticated )
+
+T:done()
+http_digest.http = default_http
