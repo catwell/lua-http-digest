@@ -1,9 +1,7 @@
-local Digest = {}  -- module table
-
+local M = {}
 local fmt = string.format
 
 local md5sum do -- select MD5 library
-
     local md5_library
 
     local ok, mod = pcall(require, "crypto")
@@ -30,12 +28,12 @@ local md5sum do -- select MD5 library
         if md5sum then md5_library = "digest" end
     end
 
-    Digest.md5_library = md5_library
+    M.md5_library = md5_library
 end
 
 assert(md5sum, "cannot find supported md5 module")
 
-Digest.http = require "socket.http"
+M.http = require "socket.http"
 local s_url = require "socket.url"
 local ltn12 = require "ltn12"
 
@@ -118,7 +116,7 @@ local _request = function(params)
     local client_sink = params.sink
     params.sink = ltn12.sink.table(responsebody)
 
-    local b, c, h = Digest.http.request(params)
+    local b, c, h = M.http.request(params)
     if (c == 401) and h["www-authenticate"] and (user and password) then
         local ht = parse_header(h["www-authenticate"])
         assert(ht.realm and ht.nonce)
@@ -164,7 +162,7 @@ local _request = function(params)
         end
         if params.source then params.source = ghost_source end
         params.sink = client_sink
-        b, c, h = Digest.http.request(params)
+        b, c, h = M.http.request(params)
         return b, c, h
     else
         -- only 1 request, copy contents of temporary sink to the client provided sink
@@ -173,7 +171,7 @@ local _request = function(params)
     end
 end
 
-Digest.request = function(params)
+M.request = function(params)
     local t = type(params)
     if t == "table" then
         return _request(hcopy(params))
@@ -186,4 +184,4 @@ Digest.request = function(params)
     end
 end
 
-return Digest
+return M
