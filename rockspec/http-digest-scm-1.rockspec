@@ -10,8 +10,7 @@ source = {
 description = {
     summary = "Client side HTTP Digest Authentication",
     detailed = [[
-        Small implementation of client-side HTTP Digest Authentication
-        that mimics the API of LuaSocket.
+        Small implementation of client-side HTTP Digest Authentication that mimics the API of LuaSocket.
         Only supports auth/MD5, no reuse of client nonce.
     ]],
     homepage = "https://github.com/catwell/lua-http-digest",

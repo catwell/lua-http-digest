@@ -83,20 +83,24 @@ T:eq( json_decode(b), httpbin_authenticated )
 T:done()
 
 -- Copas HTTP client
+if _VERSION ~= "Lua 5.1" then
+    -- We do not test Copas on Lua 5.1 because of this:
+    -- https://github.com/lunarmodules/copas/blob/27fb24326a8e513ae7ccf5b134a738f0de2f45c5/src/copas.lua#L16-L18
 
-local copas = require "copas"
-local default_http = http_digest.http
-http_digest.http = require "copas.http"
-T:start("copas")
+    local copas = require "copas"
+    local default_http = http_digest.http
+    http_digest.http = require "copas.http"
+    T:start("copas")
 
-b, c = nil, nil
-copas.addthread(function()
-    b, c = http_digest.request(url.good_creds)
-end)
-copas()
+    b, c = nil, nil
+    copas.addthread(function()
+        b, c = http_digest.request(url.good_creds)
+    end)
+    copas()
 
-T:eq( c, 200 )
-T:eq( json_decode(b), httpbin_authenticated )
+    T:eq( c, 200 )
+    T:eq( json_decode(b), httpbin_authenticated )
 
-T:done()
-http_digest.http = default_http
+    T:done()
+    http_digest.http = default_http
+end
