@@ -5,7 +5,7 @@ local http_digest = require "http-digest"
 local json_decode
 do -- Find a JSON parser
     local ok, json = pcall(require, "cjson")
-    if not ok then ok, json = pcall(require, "json") end
+    if not ok then ok, json = pcall(require, "lunajson") end
     json_decode = json.decode
     assert(ok and json_decode, "no JSON parser found :(")
 end

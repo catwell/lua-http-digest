@@ -31,7 +31,7 @@ build = {
 
 test_dependencies = {
     "cwtest",
-    "luajson",
+    "lunajson",
     "copas",
     "luasocket >= 3.1", -- see https://github.com/lunarmodules/copas/issues
 }
